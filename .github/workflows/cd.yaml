@@ -1,0 +1,27 @@
+name:  GitHub Actions CD Pipeline
+
+on:
+  push:
+      branches: ["docker"]
+
+  workflow_run:
+    workflows: ["GitHub Actions CI Pipeline"]
+    types:
+      - completed
+
+
+
+jobs:
+
+  build:
+
+    runs-on: self-hosted
+
+    steps:
+    - name: Pull Docker image
+      run: docker pull bayramozkan/cicd-pipeline:docker
+    - name: Delete Old docker container
+      run:  docker rm -f cicd-pipeline-for-docker || true
+    - name: Run Docker Container
+      run: docker run -d -p 8080:8080 --name cicd-pipeline-for-docker bayramozkan/cicd-pipeline:docker
+
